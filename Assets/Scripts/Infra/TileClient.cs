@@ -15,7 +15,7 @@ namespace SampleMapBuilder.Infra
         // - https://github.com/gsi-cyberjapan/gsivectortile-mapbox-gl-js
         // - https://cyberjapandata.gsi.go.jp/xyz/experimental_bvmap/{z}/{x}/{y}.pbf
         // tiles http://maps.gsi.go.jp/development/ichiran.html
-        public IObservable<string> Run(int zoom, int x, int y)
+        public IObservable<string> Fetch(int zoom, int x, int y)
         {
             var style = "experimental_rdcl";
             var extension = "geojson";

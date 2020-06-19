@@ -8,28 +8,25 @@ using UnityEngine.UI;
 
 namespace SampleMapBuilder.UI
 {
-    public class Fetcher : MonoBehaviour
+    public class TileRenderer : MonoBehaviour
     {
         [SerializeField] private Button RefreshButton = default;
         [SerializeField] private Material Material = default;
         [SerializeField] private int x = 58412;
         [SerializeField] private int y = 25215;
 
-        private TileClient client = new TileClient();
+        private MapUseCase mapUseCase = new MapUseCase();
 
         void Start()
         {
-            this.client = new TileClient();
             this.RefreshButton.OnClickAsObservable().Subscribe(this.Fetch).AddTo(this);
         }
 
         void Fetch(Unit _)
         {
             ClearLines();
-            client.Run(16, x, y)
-                .Select(it => RoadGeojsonParser.Parse(it))
-                .SubscribeOn(Scheduler.ThreadPool)
-                .ObserveOnMainThread()
+
+            mapUseCase.FetchRoad(x, y)
                 .Subscribe(this.Render, Debug.LogError)
                 .AddTo(this);
         }
