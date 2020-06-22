@@ -1,5 +1,6 @@
 using System;
 using SampleMapBuilder.Data;
+using SampleMapBuilder.Data.GeojsonCore;
 using UnityEngine;
 
 namespace SampleMapBuilder.Infra

@@ -1,6 +1,6 @@
 using System;
 
-namespace SampleMapBuilder.Data
+namespace SampleMapBuilder.Data.GeojsonCore
 {
     [Serializable]
     public class LatLngRect

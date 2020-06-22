@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using SampleMapBuilder.Data;
+using System.Linq;
+using SampleMapBuilder.Data.GeojsonCore;
 using SampleMapBuilder.Domain.UseCase;
 using SampleMapBuilder.Infra;
 using UniRx;
@@ -8,7 +9,7 @@ using UnityEngine.UI;
 
 namespace SampleMapBuilder.UI
 {
-    public class TileRenderer : MonoBehaviour
+    public class GeojsonTileRenderer : MonoBehaviour
     {
         [SerializeField] private Button RefreshButton = default;
         [SerializeField] private Material Material = default;
@@ -31,17 +32,19 @@ namespace SampleMapBuilder.UI
                 .AddTo(this);
         }
 
-        void Render(RoadGeojson json)
+        void Render(Geojson json)
         {
-            var mapUseCase = new MapUseCase();
             var latLngRect = mapUseCase.FindCoveringLatLngRect(json);
             var latLngCenter = latLngRect.getCenter();
 
-            for (var i = 0; i < json.features.Length; i++)
+            var lines = json.features
+                .Where(it => it.geometry.IsLineString())
+                .Select(it => it.geometry.AsLineString());
+    
+            foreach (var line in lines)
             {
-                var latlngArray = json.features[i].geometry.coordinates;
-                var from = latlngArray[0];
-                var to = latlngArray[1];
+                var from = line.coordinates[0];
+                var to = line.coordinates[1];
                 var xyFrom = CoordinateConverter.LatLng2World(latLngCenter, from) * 10;
                 var xyTo = CoordinateConverter.LatLng2World(latLngCenter, to) * 10;
                 CreateLine(new[]
