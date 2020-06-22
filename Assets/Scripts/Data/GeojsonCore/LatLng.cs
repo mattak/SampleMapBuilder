@@ -7,5 +7,14 @@ namespace SampleMapBuilder.Data.GeojsonCore
     {
         public double latitude;
         public double longitude;
+
+        public Mapbox.VectorTile.Geometry.LatLng ToMapBoxLatLng()
+        {
+            return new Mapbox.VectorTile.Geometry.LatLng()
+            {
+                Lat = latitude,
+                Lng = longitude,
+            };
+        }
     }
 }
