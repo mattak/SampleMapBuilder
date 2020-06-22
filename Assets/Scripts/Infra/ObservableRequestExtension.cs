@@ -25,6 +25,14 @@ namespace SampleMapBuilder.Infra
                 FetchText(request, null, observer, progress, cancellation));
         }
 
+        public static IObservable<byte[]> ToRequestBinaryObservable(
+            this UnityWebRequest request,
+            IProgress<float> progress = null)
+        {
+            return Observable.FromCoroutine<byte[]>((observer, cancellation) =>
+                FetchBinary(request, null, observer, progress, cancellation));
+        }
+
         private static IEnumerator Fetch<T>(
             UnityWebRequest request,
             IDictionary<string, string> headers,
@@ -107,6 +115,34 @@ namespace SampleMapBuilder.Infra
                 {
                     var text = System.Text.Encoding.UTF8.GetString(request.downloadHandler.data);
                     observer.OnNext(text);
+                    observer.OnCompleted();
+                }
+            }
+        }
+
+        private static IEnumerator FetchBinary(
+            UnityWebRequest request,
+            IDictionary<string, string> headers,
+            IObserver<byte[]> observer,
+            IProgress<float> reportProgress,
+            CancellationToken cancel)
+        {
+            using (request)
+            {
+                yield return Fetch(request, headers, observer, reportProgress, cancel);
+
+                if (cancel.IsCancellationRequested)
+                {
+                    yield break;
+                }
+
+                if (!string.IsNullOrEmpty(request.error))
+                {
+                    observer.OnError(new Exception($"{request.url} -> {request.error}"));
+                }
+                else
+                {
+                    observer.OnNext(request.downloadHandler.data);
                     observer.OnCompleted();
                 }
             }
